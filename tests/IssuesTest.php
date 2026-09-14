@@ -760,7 +760,7 @@ class IssuesTest extends TestCase
     /**
      * Issue #423: export callback returning null crashed for Collection input —
      * transform() kept the null in place, then toArray() was called on it
-     * unconditionally. reject() now removes falsy rows entirely instead of
+     * unconditionally. reject() now removes null/false rows entirely instead of
      * mutating them in place.
      *
      * @see https://github.com/rap2hpoutre/fast-excel/issues/423
@@ -789,8 +789,10 @@ class IssuesTest extends TestCase
 
     /**
      * Same as above, but the callback returns false instead of null — both
-     * are treated as "skip this row", mirroring the documented import-callback
-     * semantics.
+     * are treated as "skip this row". Stricter than the import callback,
+     * which drops any falsy value via a loose if ($result) check; on export
+     * only null and false are dropped, so rows containing 0, '' or [] are not
+     * silently dropped.
      */
     public function testIssue423FalseCallbackCollection()
     {
